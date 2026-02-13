@@ -66,8 +66,10 @@ void Button::tick(){
 }
 
 void Button::longClick(){
-  if(getCountClickToMenu() == 6) id.generateNewId();
-  if(getCountClickToMenu() == 7) id.generateNewPassword();
+  /*if(getCountClickToMenu() == 7)*/ id.generateNewId();
+  /*if(getCountClickToMenu() == 6)*/ id.generateNewPassword();
+  Serial.println(getCountClickToMenu());
+  Serial.println("long click");
   //if (getCountClickToMenu() != 7 && getCountClickToMenu() != 6) longClicked = !longClicked;
 }
 
@@ -215,11 +217,9 @@ void Menu::calculateIndications(){
     break;
   case 6:
     indications = id.getId();
-    Serial.println(indications);
     break;
   case 7:
     indications = id.getPassword();
-    Serial.println(indications);
     break;
   default:
     indications = "none";
