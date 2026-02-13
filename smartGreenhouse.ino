@@ -2,7 +2,7 @@
 
 #define BUTTON1_PIN 26
 #define BUTTON2_PIN 25
-#define TIMER_TICK 200
+#define SEND_TICK 10000
 
 Menu menu(BUTTON1_PIN, BUTTON2_PIN);
 

@@ -18,7 +18,7 @@ void Id::generateNewPassword(){
   String allSymbols = "0123456789qwertyuiopasdfghjklzxcvbnmQWERTYUIOASDFGHJKLZXCVBNM!?*";
   password = "";
   for(size_t i = 0;  i < 8; ++i){
-    id += allSymbols[random(allSymbols.length())];
+    password += allSymbols[random(allSymbols.length())];
   }
   saveNewPassword();
   Serial.print("new password: ");
@@ -26,19 +26,24 @@ void Id::generateNewPassword(){
 }
 
 void Id::saveNewId(){
-  EEPROM.put(NULL, getId());
+  EEPROM.put(NULL, id);
   EEPROM.commit();
 }
 
-void Id::seveNewPassword(){
-  EEPROM.put(EEPROM_SIZE / 2, getPassword());
+void Id::saveNewPassword(){
+  EEPROM.put(EEPROM_SIZE / 2, password);
   EEPROM.commit();
 }
 
 void Id::init(){
   EEPROM.begin(EEPROM_SIZE);
+  
   setIdFromEEPROM();
+  generateNewId();
+
   setPasswordFromEEPROM();
+  generateNewPassword();
+
 }
 
 void Id::setIdFromEEPROM(){
@@ -55,3 +60,5 @@ void Id::setPasswordFromEEPROM(){
 
 String Id::getId(){ return id; }
 String Id::getPassword(){ return password ;}
+
+

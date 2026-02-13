@@ -5,8 +5,6 @@
 #include "ID.h"
 #include "Menu.h"
 #include "illumination.h"
-// #include "fan.h"
-// #include "light.h"
 #include "releTumbler.h"
 
 #define DHT_PIN 14
@@ -16,7 +14,7 @@
 #define SOIL_MOISTURE3 32
 #define LONG_PRESS_TIME 5000
 #define NO_INFO "no information"
-#define MENU_POINTS 7
+#define MENU_POINTS 8
 #define FAN_PIN 18
 #define LAPM_PIN 19
 
@@ -68,7 +66,9 @@ void Button::tick(){
 }
 
 void Button::longClick(){
-  id.generateNewId();
+  if(getCountClickToMenu() == 6) id.generateNewId();
+  if(getCountClickToMenu() == 7) id.generateNewPassword();
+  //if (getCountClickToMenu() != 7 && getCountClickToMenu() != 6) longClicked = !longClicked;
 }
 
 int Button::getCountClickToMenu(){
@@ -103,7 +103,7 @@ void Menu::tick(){
         }
       }
     }
-    Serial.println(illumination.read());
+    //Serial.println(illumination.read());
     if(buttonAction.isClicked()){
       illumination.autoIlluminationReverse();
     }
@@ -118,7 +118,7 @@ void Menu::tick(){
       lamp.reverse();
     }
   default:
-    Serial.println("1");
+    //Serial.println("1");
     break;
   }
 }
@@ -134,6 +134,7 @@ Menu::Menu(int buttonSelectPin, int buttonActionPin){
   mods[4] = "fan";
   mods[5] = "light";
   mods[6] = "ID";
+  mods[7] = "password";
 }
 
 void Menu::init(){
@@ -161,13 +162,22 @@ void Menu::show(){
   lcd.clear();
   lcd.setCursor(0, 0);
 
-  if(buttonAction.isLongClicked()){
-    lcd.print("last ID was del");
-    lcd.setCursor(0, 1);
-    lcd.print("new ID: ");
-    lcd.print(id.getId());
+  if(buttonAction.isLongClicked() && (buttonSelect.getCountClickToMenu() == 6 || buttonSelect.getCountClickToMenu() == 7)){
+    if(buttonSelect.getCountClickToMenu() == 6){
+      lcd.print("last ID was del");
+      lcd.setCursor(0, 1);
+      lcd.print("new ID: ");
+      lcd.print(id.getId());
+    }
+    else if(buttonSelect.getCountClickToMenu() == 7){
+      lcd.print("last pwd was del");
+      lcd.setCursor(0, 1);
+      lcd.print("new pwd: ");
+      lcd.print(id.getPassword());
+    }
   }
   else{
+
     lcd.print(mods[buttonSelect.getCountClickToMenu()] + ":");
     calculateIndications();
 
@@ -205,9 +215,21 @@ void Menu::calculateIndications(){
     break;
   case 6:
     indications = id.getId();
+    Serial.println(indications);
+    break;
+  case 7:
+    indications = id.getPassword();
+    Serial.println(indications);
     break;
   default:
-    indications = "activate";
+    indications = "none";
     break;
   }
+  Serial.print(buttonSelect.getCountClickToMenu());
+  Serial.print(" ");
+  Serial.print(id.getId());
+  Serial.print(" ");
+  Serial.println(id.getPassword());
 }
+
+

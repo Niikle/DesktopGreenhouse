@@ -32,17 +32,16 @@ private:
     showSoilHumidity,
     showIsAutoLight,
     activateFan,
-    activateWindow,
     activateLight,
-    activateWater,
-    showID
+    showID,
+    showPassword
   };
 
 private:
   Button buttonSelect;
   Button buttonAction;
   Mode mode;
-  String mods[10];
+  String mods[8];
   String indications;
 
 private:
