@@ -1,15 +1,26 @@
 #include "Menu.h"
+#include <GTimer.h>
 
 #define BUTTON1_PIN 26
 #define BUTTON2_PIN 25
-#define SEND_TICK 10000
+#define SEND_MENU_TICK 150
+#define SEND_MENU_SHOW 500
 
 Menu menu(BUTTON1_PIN, BUTTON2_PIN);
 
-unsigned long previousMillisTick = 0;
+GTimer<millis> timerMenuTick;
+GTimer<millis> timerMenuShow;
 
 void setup() {
   Serial.begin(115200);
+
+  timerMenuTick.setMode(GTMode::Timeout);
+  timerMenuTick.setTime(SEND_MENU_TICK);
+  timerMenuTick.start();
+
+  timerMenuShow.setMode(GTMode::Timeout);
+  timerMenuShow.setTime(SEND_MENU_SHOW);
+  timerMenuShow.start();
 
   menu.init();
 
@@ -19,9 +30,17 @@ void setup() {
 }
 
 void loop() {  
-  menu.tick();
-  delay(250);
-  menu.show();
+  static GTimer<millis> timerMenuTick(SEND_MENU_TICK, true);
+  static GTimer<millis> timerMenuShow(SEND_MENU_SHOW, true);
+    
+  if (timerMenuTick){
+    menu.tick();
+  }
+  
+  if (timerMenuShow){
+    menu.show();
+  }
+
 }
 
 
