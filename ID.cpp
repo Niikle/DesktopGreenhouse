@@ -37,12 +37,9 @@ void Id::saveNewPassword(){
 
 void Id::init(){
   EEPROM.begin(EEPROM_SIZE);
-  
-  setIdFromEEPROM();
-  generateNewId();
 
+  setIdFromEEPROM();
   setPasswordFromEEPROM();
-  generateNewPassword();
 
 }
 
