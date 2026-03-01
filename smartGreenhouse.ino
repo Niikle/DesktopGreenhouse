@@ -4,7 +4,7 @@
 #define BUTTON1_PIN 26
 #define BUTTON2_PIN 25
 #define SEND_MENU_TICK 150
-#define SEND_MENU_SHOW 500
+#define SEND_MENU_SHOW 300
 #define SEND_SEND_DATA 5000
 
 Menu menu(BUTTON1_PIN, BUTTON2_PIN);
@@ -48,7 +48,7 @@ void loop() {
   }
 
   if(timerSendData){
-    
+    menu.sendData();
   }
 
 }

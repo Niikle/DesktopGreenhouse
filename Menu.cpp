@@ -18,8 +18,8 @@
 #define FAN_PIN 18
 #define LAPM_PIN 19
 
-#define ILLUMINATION_RHRESHOLD 1200
-#define ILLUMINATION_DIFFERENCE 600
+#define ILLUMINATION_RHRESHOLD 50
+#define ILLUMINATION_DIFFERENCE 370
 
 LiquidCrystal_I2C lcd(0x27, 16, 2);
 DHT dht(DHT_PIN, DHT11);
@@ -27,6 +27,10 @@ SoilMoisture soil1, soil2, soil3;
 Id id;
 Illumination illumination;
 ReleTumbler fan, lamp;
+
+double temperature, humidity, moisture;
+bool autoLightMode, isFanWork, isLightWork;
+String id, pass;
 
 void Button::setGPIO(int GPIO){
   this->GPIO = GPIO;
@@ -83,9 +87,11 @@ void Menu::tick(){
 
   switch(buttonSelect.getCountClickToMenu()){
   case 3:
+  Serial.print("illumination: ");
+  Serial.println(illumination.read());
     if(illumination.isAutoIllumination()){
       if(!lamp.isON()){
-        if(illumination.read() < ILLUMINATION_RHRESHOLD){
+        if(illumination.read() > ILLUMINATION_RHRESHOLD){
           lamp.turnON();
           Serial.println("lamp.turnON();");
         }
@@ -95,7 +101,7 @@ void Menu::tick(){
         }
       }
       else{
-        if(illumination.read() < ILLUMINATION_RHRESHOLD + ILLUMINATION_DIFFERENCE){
+        if(illumination.read() > ILLUMINATION_RHRESHOLD + ILLUMINATION_DIFFERENCE){
           lamp.turnON();
           Serial.println("lamp.turnON();");
         }
