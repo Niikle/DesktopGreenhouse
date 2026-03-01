@@ -52,5 +52,6 @@ public:
   void show();
   void init();
   void tick();
+  void sendData();
 
 };

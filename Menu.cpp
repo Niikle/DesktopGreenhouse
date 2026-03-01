@@ -125,6 +125,10 @@ void Menu::tick(){
   }
 }
 
+void Menu::sendData(){
+  
+}
+
 Menu::Menu(int buttonSelectPin, int buttonActionPin){
   buttonSelect.setGPIO(buttonSelectPin);
   buttonAction.setGPIO(buttonActionPin);

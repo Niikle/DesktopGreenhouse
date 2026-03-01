@@ -5,11 +5,13 @@
 #define BUTTON2_PIN 25
 #define SEND_MENU_TICK 150
 #define SEND_MENU_SHOW 500
+#define SEND_SEND_DATA 5000
 
 Menu menu(BUTTON1_PIN, BUTTON2_PIN);
 
 GTimer<millis> timerMenuTick;
 GTimer<millis> timerMenuShow;
+GTimer<millis> timerSendData;
 
 void setup() {
   Serial.begin(115200);
@@ -21,6 +23,10 @@ void setup() {
   timerMenuShow.setMode(GTMode::Timeout);
   timerMenuShow.setTime(SEND_MENU_SHOW);
   timerMenuShow.start();
+
+  timerSendData.setMode(GTMode::Timeout);
+  timerSendData.setTime(SEND_SEND_DATA);
+  timerSendData.start();
 
   menu.init();
 
@@ -39,6 +45,10 @@ void loop() {
   
   if (timerMenuShow){
     menu.show();
+  }
+
+  if(timerSendData){
+    
   }
 
 }
