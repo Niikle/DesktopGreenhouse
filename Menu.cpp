@@ -6,6 +6,8 @@
 #include "Menu.h"
 #include "illumination.h"
 #include "releTumbler.h"
+#include <WiFi.h>
+#include <HTTPClient.h>
 
 #define DHT_PIN 14
 #define ILLUMINATION_PIN 27
@@ -21,6 +23,7 @@
 #define ILLUMINATION_RHRESHOLD 50
 #define ILLUMINATION_DIFFERENCE 370
 
+
 LiquidCrystal_I2C lcd(0x27, 16, 2);
 DHT dht(DHT_PIN, DHT11);
 SoilMoisture soil1, soil2, soil3;
@@ -28,9 +31,19 @@ Id id;
 Illumination illumination;
 ReleTumbler fan, lamp;
 
-double temperature, humidity, moisture;
-bool autoLightMode, isFanWork, isLightWork;
-String id, pass;
+double temperature, humidity;
+int moisture1, moisture2, moisture3;
+bool isAutoLightMode, isFanWork, isLightWork;
+
+void Menu::sendData(){
+  String sendStrAllData = "id=" + id.getId() + "&pass=" + id.getPassword() + "&tempera&ture=" + String(temperature) + "&humidity=" + String(humidity) + "&moisture1=" + 
+    String(moisture1) + "&moisture2=" + String(moisture2) + "&moisture3=" + String(moisture3) + "&isAutoLightMode=" + String(isAutoLightMode) + "&isFanWork=" +
+    String(isFanWork) + "&isLightWork=" + String(isLightWork);
+
+
+
+  Serial.println(sendStrAllData);
+}
 
 void Button::setGPIO(int GPIO){
   this->GPIO = GPIO;
@@ -131,10 +144,6 @@ void Menu::tick(){
   }
 }
 
-void Menu::sendData(){
-  
-}
-
 Menu::Menu(int buttonSelectPin, int buttonActionPin){
   buttonSelect.setGPIO(buttonSelectPin);
   buttonAction.setGPIO(buttonActionPin);
@@ -168,6 +177,8 @@ void Menu::init(){
   pinMode(SOIL_MOISTURE2, INPUT_PULLUP);
   pinMode(SOIL_MOISTURE3, INPUT_PULLUP);
 
+
+
 }
 
 void Menu::show(){
@@ -200,29 +211,38 @@ void Menu::show(){
 
 void Menu::calculateIndications(){
   indications = NO_INFO;
+
+  temperature = dht.readTemperature();
+  humidity = dht.readHumidity();
+  moisture1 = soil1.soil();
+  moisture2 = soil2.soil();
+  moisture3 = soil3.soil();
+  isAutoLightMode = illumination.isAutoIllumination();
+  isFanWork = fan.isON();
+  isLightWork = lamp.isON();
+
   switch(buttonSelect.getCountClickToMenu()){
   case 0:
-    indications = String(dht.readTemperature()) + "*C";
+    indications = String(temperature) + "*C";
     break;
   case 1:
-    indications = String(dht.readHumidity()) + "%";
+    indications = String(humidity) + "%";
     break;
   case 2:
-    indications = String(soil1.soil()) + "% " +
-                  String(soil2.soil()) + "% " +
-                  String(soil3.soil()) + "% ";
+    indications = String(moisture1) + "% " +
+                  String(moisture2) + "% " +
+                  String(moisture3) + "% ";
     break;
   case 3:
-    //indications = String(illumination.read()) + "% ";
-    if(!illumination.isAutoIllumination()) indications = "OFF";
+    if(!isAutoLightMode) indications = "OFF";
     else indications = "ON";
     break;
   case 4:
-    if(fan.isON()) indications = "deactivate";
+    if(isFanWork) indications = "deactivate";
     else indications = "activate";
     break;
   case 5:
-    if(lamp.isON()) indications = "deactivate";
+    if(isLightWork) indications = "deactivate";
     else indications = "activate";
     break;
   case 6:
@@ -235,11 +255,11 @@ void Menu::calculateIndications(){
     indications = "none";
     break;
   }
-  Serial.print(buttonSelect.getCountClickToMenu());
-  Serial.print(" ");
-  Serial.print(id.getId());
-  Serial.print(" ");
-  Serial.println(id.getPassword());
+  // Serial.print(buttonSelect.getCountClickToMenu());
+  // Serial.print(" ");
+  // Serial.print(id.getId());
+  // Serial.print(" ");
+  // Serial.println(id.getPassword());
 }
 
 

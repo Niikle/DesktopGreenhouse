@@ -38,6 +38,7 @@ void setup() {
 void loop() {  
   static GTimer<millis> timerMenuTick(SEND_MENU_TICK, true);
   static GTimer<millis> timerMenuShow(SEND_MENU_SHOW, true);
+  static GTimer<millis> timerSendData(SEND_SEND_DATA, true);
     
   if (timerMenuTick){
     menu.tick();
