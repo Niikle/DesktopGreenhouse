@@ -23,6 +23,7 @@
 #define ILLUMINATION_RHRESHOLD 50
 #define ILLUMINATION_DIFFERENCE 370
 
+const char* server = "https://teplsys-github-io.onrender.com/login";
 
 LiquidCrystal_I2C lcd(0x27, 16, 2);
 DHT dht(DHT_PIN, DHT11);
@@ -40,7 +41,18 @@ void Menu::sendData(){
     String(moisture1) + "&moisture2=" + String(moisture2) + "&moisture3=" + String(moisture3) + "&isAutoLightMode=" + String(isAutoLightMode) + "&isFanWork=" +
     String(isFanWork) + "&isLightWork=" + String(isLightWork);
 
-
+  WiFi.begin(id.getId(), id.getPassword());
+  if(WiFi.status()== WL_CONNECTED){
+      HTTPClient http;
+      http.begin(server);
+      http.addHeader("String", "application/x-www-form-urlencoded");
+      String httpRequestData = sendStrAllData;           
+      int httpResponseCode = http.POST(httpRequestData);
+     
+      Serial.print("HTTP code: ");
+      Serial.println(httpResponseCode);
+      http.end();
+    }
 
   Serial.println(sendStrAllData);
 }
